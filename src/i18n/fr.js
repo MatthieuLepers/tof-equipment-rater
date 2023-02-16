@@ -1,6 +1,10 @@
 module.exports = {
   locale: 'fr-FR',
   datas: {
+    numberFormat: {
+      thousandSeparator: '',
+      decimalSeparator: ',',
+    },
     usableFor: 'Utilisable pour',
     parts: {
       helm: 'Casque de la forteresse',

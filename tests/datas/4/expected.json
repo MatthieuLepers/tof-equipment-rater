@@ -1,0 +1,10 @@
+{
+  "locale": "en-EN",
+  "type": "sabatons",
+  "stats": {
+    "atk": 277,
+    "hp": 17909,
+    "frostRes": 215,
+    "crit": 3371
+  }
+}

@@ -1,0 +1,5 @@
+Fortress Sabatons
+Attack +277
+HP +17,909
+Frost Resistance +215
+Crit +3,371

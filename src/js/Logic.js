@@ -25,18 +25,18 @@ const Logic = (logger) => {
   // ;
 
   const partRegex = /^([A-Za-z -]+)(?:[0-9]+)?.*$/;
-  const statRegex = /.*?([A-Za-z ]+\+[0-9,.]+%?).*$/;
+  const statRegex = /^(?:.{0,2} )?([A-Za-z ]+\+[0-9,.]+%?).*$/;
   const getLinesFromOCR = (ocrText) => {
     const lines = normalize(ocrText)
       .split('\n')
       .filter((line) => line.length > 0 && !/^\s+$/.test(line))
       .filter((line, i) => i === 0 || statRegex.test(line))
       .map((line) => {
-        if (partRegex.test(line)) {
-          return line.replace(partRegex, '$1').trim();
-        }
         if (statRegex.test(line)) {
           return line.replace(statRegex, '$1').trim();
+        }
+        if (partRegex.test(line)) {
+          return line.replace(partRegex, '$1').trim();
         }
         return line;
       })
@@ -101,6 +101,11 @@ const Logic = (logger) => {
     .find(getPartType(line))
   ;
 
+  const parseValue = (locale, value) => {
+    const { thousandSeparator, decimalSeparator } = i18n[locale].numberFormat;
+    return parseFloat(value.replace(thousandSeparator, '').replace(decimalSeparator, '.'));
+  };
+
   const getPartDataFromOCR = (ocrText) => {
     const [line, ...statLines] = getLinesFromOCR(ocrText);
     let locale;
@@ -130,7 +135,7 @@ const Logic = (logger) => {
             const [, value, percent] = /^[^0-9,.]*([0-9,.]+)(%?)$/.exec(statLine);
             return {
               ...acc,
-              [`${statType}${percent ? '%' : ''}`]: parseFloat(value.replace(',', '.')),
+              [`${statType}${percent ? '%' : ''}`]: parseValue(locale, value),
             };
           } catch (e) {
             logger.log('error', `I do not recognize the statistic in "${line}", contact the developer so that he can remedy this.`, e);

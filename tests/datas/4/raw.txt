@@ -1,0 +1,13 @@
+Fortress Sabatons 28 _
+
+ 
+
+& HP +2,431
+
+Random Stats
+s Attack +277
+
+@ HP +17,909
+Frost Resistance +215
+
+3k Crit +3,371
