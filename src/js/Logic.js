@@ -2,28 +2,54 @@ const Diff = require('diff');
 const i18n = require('../i18n');
 
 const Logic = (logger) => {
-  const regex = /([A-Za-z ]+\+[0-9]+).*$/;
-  const partRegex = /^([A-Za-z -]+(?:[0-9]+)?).*$/;
-  const statRegex = /^([A-Za-z ]+\+[0-9,.]+%?).*$/;
-
   const normalize = (str) => str
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
   ;
 
-  const getLinesFromOCR = (ocrText) => normalize(ocrText)
-    .split('\n')
-    .filter((line) => line.length > 0 && !/^\s+$/.test(line))
-    .filter((line, i) => i === 0 || regex.test(line))
-    .map((line, i) => (i === 0
-      ? line.replace(partRegex, '$1')
-      : line
-        .split(' ')
-        .filter((p, j) => j > 0 || p.length > 2)
-        .join(' ')
-        .replace(statRegex, '$1')
-    ).trim())
-  ;
+  // const regex = /([A-Za-z ]+\+[0-9]+).*$/;
+  // const partRegex = /^([A-Za-z -]+(?:[0-9]+)?).*$/;
+  // const statRegex = /^([A-Za-z ]+\+[0-9,.]+%?).*$/;
+  // const getLinesFromOCR = (ocrText) => normalize(ocrText)
+  //   .split('\n')
+  //   .filter((line) => line.length > 0 && !/^\s+$/.test(line))
+  //   .filter((line, i) => i === 0 || regex.test(line))
+  //   .map((line, i) => (i === 0
+  //     ? line.replace(partRegex, '$1')
+  //     : line
+  //       .split(' ')
+  //       .filter((p, j) => j > 0 || p.length > 2)
+  //       .join(' ')
+  //       .replace(statRegex, '$1')
+  //   ).trim())
+  // ;
+
+  const partRegex = /^([A-Za-z -]+)(?:[0-9]+)?.*$/;
+  const statRegex = /.*?([A-Za-z ]+\+[0-9,.]+%?).*$/;
+  const getLinesFromOCR = (ocrText) => {
+    const lines = normalize(ocrText)
+      .split('\n')
+      .filter((line) => line.length > 0 && !/^\s+$/.test(line))
+      .filter((line, i) => i === 0 || statRegex.test(line))
+      .map((line) => {
+        if (partRegex.test(line)) {
+          return line.replace(partRegex, '$1').trim();
+        }
+        if (statRegex.test(line)) {
+          return line.replace(statRegex, '$1').trim();
+        }
+        return line;
+      })
+    ;
+
+    if (lines.length < 5) {
+      logger.log('error', 'Invalid data');
+      throw new Error('Invalid data');
+    }
+
+    const [partLine, ...statLines] = lines;
+    return [partLine, ...statLines.slice(statLines.length - 4)];
+  };
 
   const getPartType = (line) => (locale) => {
     const dataset = i18n[locale].parts;

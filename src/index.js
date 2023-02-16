@@ -2,7 +2,7 @@
 const path = require('path');
 const dotenv = require('dotenv');
 const CommandoClient = require('./js/classes/Client');
-// https://github.com/heroku/node-js-getting-started
+
 dotenv.config();
 
 const client = new CommandoClient({

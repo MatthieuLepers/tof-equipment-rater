@@ -31,5 +31,6 @@ module.exports = {
       tabWidth: 2,
     }],
     'semi-style': 'off',
+    'class-methods-use-this': 'off',
   },
 };

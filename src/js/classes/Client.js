@@ -1,5 +1,7 @@
 const { CommandoClient } = require('discord.js-commando');
 const winston = require('winston');
+const Queue = require('bee-queue');
+const { default: getTextFromImage } = require('node-text-from-image');
 
 module.exports = class BotClient extends CommandoClient {
   constructor(options) {
@@ -11,6 +13,14 @@ module.exports = class BotClient extends CommandoClient {
         new winston.transports.File({ filename: 'console.log' }),
       ],
       format: winston.format.printf((log) => `[${new Date().toLocaleString()}] - [${log.level.toUpperCase()}] - ${log.message}`),
+    });
+    this.rateQueue = new Queue('RateQueue', {
+      removeOnSuccess: true,
+      removeOnFailure: true,
+    });
+    this.rateQueue.process(async (jb) => {
+      const text = await getTextFromImage(jb.data.file.url);
+      return text;
     });
 
     this.on('ready', () => this.logger.log('info', 'Bot is ready !'));

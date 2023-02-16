@@ -1,0 +1,5 @@
+Fortress Combat Engine
+Volt Attack +1.26%
+Physical Attack +494
+Volt Damage Boost +1.37%
+HP +3.1%

@@ -1,0 +1,10 @@
+{
+  "locale": "en-EN",
+  "type": "combatEngine",
+  "stats": {
+    "voltAtk%": 1.26,
+    "physicalAtk": 494,
+    "voltDmgBoost%": 1.37,
+    "hp%": 3.1
+  }
+}

@@ -1,18 +1,20 @@
 const fs = require('fs');
 const path = require('path');
-const Part = require('../src/js/classes/Part');
+// const Part = require('../src/js/classes/Part');
+const { getLinesFromOCR } = require('../src/js/Logic')(console);
 // const { default: getTextFromImage } = require('node-text-from-image');
+// const { exit } = require('process');
 
 // const serial = (funcs) => funcs.reduce((promise, func) => promise.then((result) => func().then(Array.prototype.concat.bind(result))), Promise.resolve([]));
 
 // serial(fs
 //   .readdirSync(path.resolve(__dirname, '../tmp'))
-//   .filter((file) => parseInt(file, 10) > 23 && fs.statSync(path.resolve(__dirname, '../tmp', file)).isDirectory())
+//   .filter((file) => fs.statSync(path.resolve(__dirname, '../tmp', file)).isDirectory())
 //   .map((file) => async () => {
 //     const text = await getTextFromImage(path.resolve(__dirname, '../tmp', file, `${file}.jpg`));
 //     fs.writeFileSync(path.resolve(__dirname, '../tmp', file, 'raw.txt'), text);
 //     console.log(file);
-//   }))
+//   })).then(exit)
 // ;
 
 const data = fs
@@ -29,8 +31,7 @@ const data = fs
   ], [])
 ;
 
-// 14, 15 => degits de givre => luck ?
 data.forEach((obj) => {
-  const part = Part.fromOCR(obj.raw);
-  console.log(part.rate());
+  const lines = getLinesFromOCR(obj.raw);
+  console.log(obj.lines.every((line) => lines.includes(line)));
 });

@@ -18,12 +18,12 @@ module.exports = class HelloCommand extends Command {
           key: 'commandName',
           prompt: 'For which order do you need information?',
           type: 'string',
+          validate: (val) => Object.keys(Usage).includes(val),
         },
       ],
     });
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async run(msg, { commandName }) {
     if (Usage[commandName]) {
       const { usage, text, example } = Usage[commandName];

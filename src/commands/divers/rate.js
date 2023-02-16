@@ -1,5 +1,4 @@
 const { Command } = require('discord.js-commando');
-const { default: getTextFromImage } = require('node-text-from-image');
 const Part = require('../../js/classes/Part');
 
 module.exports = class RateCommand extends Command {
@@ -9,6 +8,7 @@ module.exports = class RateCommand extends Command {
       memberName: 'rate',
       group: 'divers',
       description: 'Rate an equipment part using screenshot.\n!rate and post your screenshot',
+      ownerOnly: process.env.DEV_MODE,
       guildOnly: false,
       throttling: {
         usages: 2,
@@ -21,30 +21,45 @@ module.exports = class RateCommand extends Command {
     const [attachment] = msg.attachments;
     const [, file] = attachment;
 
-    try {
-      await msg.react('👀');
-
-      if (!file) {
-        throw new Error('No screenshot found, my job ends there.');
-      }
-
-      const fileExt = file.name.replace(/^.*\.(jpe?g|png)$/, '$1');
-      if (!['jpg', 'jpeg', 'png'].includes(fileExt)) {
-        throw new Error('I do not support this type of file, try with a *.png or *.jpg');
-      }
-
-      const text = await getTextFromImage(file.url);
-      const part = Part.fromOCR(text, this.client.logger);
-
-      msg.reply(`\`\`\`${part.rate()}\`\`\``);
-    } catch (e) {
-      this.client.logger.log('error', e);
-      await msg.react('❌');
-      msg.reply(`\`\`\`${e.message}\`\`\``);
-    } finally {
-      await msg.reactions.resolve('👀').users.remove(this.client.user.id);
+    if (!file) {
+      msg.reply('No screenshot found, my job ends there.');
+      return;
     }
 
-    await msg.react('✅');
+    const fileExt = file.name.replace(/^.*\.(jpe?g|png)$/, '$1');
+    if (!['jpg', 'jpeg', 'png'].includes(fileExt)) {
+      msg.reply('I do not support this type of file, try with a *.png or *.jpg');
+    }
+
+    // Send to user see notification
+    await msg.react('👀');
+
+    // Create OCR job and enqueue it
+    const job = this.client.rateQueue.createJob({ file, logger: this.client.logger });
+    await job.save();
+
+    // On job success
+    job.on('succeeded', async (ocrText) => {
+      console.log(`Received result for job ${job.id}: ${ocrText}`);
+
+      try {
+        const part = Part.fromOCR(ocrText, this.client.logger);
+        msg.reply(`\`\`\`${part.rate()}\`\`\``);
+        await msg.react('✅');
+      } catch (e) {
+        this.client.logger.log('error', e);
+        msg.reply(e.message);
+        await msg.react('❌');
+      } finally {
+        await msg.reactions.resolve('👀').users.remove(this.client.user.id);
+      }
+    });
+
+    // On job failed
+    job.on('failed', async (err) => {
+      msg.reply(err.message);
+      await msg.reactions.resolve('👀').users.remove(this.client.user.id);
+      await msg.react('❌');
+    });
   }
 };

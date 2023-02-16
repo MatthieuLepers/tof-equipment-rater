@@ -1,0 +1,5 @@
+Gantelets de la forteresse
+Attaque physique +69
+Crit +2883
+Resistance +64
+PV +21843

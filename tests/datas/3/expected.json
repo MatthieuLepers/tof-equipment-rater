@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "sabatons",
+  "stats": {
+    "voltAtk": 69,
+    "physicalAtk": 503,
+    "crit": 3061,
+    "voltRes": 215
+  }
+}
