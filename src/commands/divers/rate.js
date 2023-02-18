@@ -35,8 +35,11 @@ module.exports = class RateCommand extends Command {
     await msg.react('👀');
 
     // Create OCR job and enqueue it
-    const job = this.client.rateQueue.createJob({ file, logger: this.client.logger });
+    const job = this.client.rateQueue.createJob({ file });
     await job.save();
+
+    // Warn user about new queue system
+    msg.reply('Hi! I have received your rate request and have placed it in the queue, I will mention you when I have the results.');
 
     // On job success
     job.on('succeeded', async (ocrText) => {
