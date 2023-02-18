@@ -4,8 +4,8 @@ const path = require('path');
 const i18n = fs
   .readdirSync(path.resolve(__dirname, './'))
   .reduce((acc, file) => {
-    if (file === 'i18n.js') return acc;
-    const localeData = require(path.resolve(__dirname, './', file));
+    if (!file.endsWith('.json')) return acc;
+    const localeData = JSON.parse(`${fs.readFileSync(path.resolve(__dirname, './', file))}`);
     return {
       ...acc,
       [localeData.locale]: localeData.datas,

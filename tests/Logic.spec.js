@@ -9,18 +9,19 @@ const {
 } = require('../src/js/Logic')(console);
 
 let data = [];
+const dataDir = path.resolve(__dirname, './datas');
 
 beforeAll(() => {
   data = fs
-    .readdirSync(path.resolve(__dirname, './datas'))
-    .filter((file) => /^[0-9]+$/.test(file) && fs.statSync(path.resolve(__dirname, './datas', file)).isDirectory())
+    .readdirSync(dataDir)
+    .filter((file) => /^[0-9]+$/.test(file) && fs.statSync(path.resolve(dataDir, file)).isDirectory())
     .reduce((acc, fileName) => [
       ...acc,
       {
         index: parseInt(fileName, 10),
-        raw: `${fs.readFileSync(path.resolve(__dirname, `./datas/${fileName}/raw.txt`))}`,
-        lines: `${fs.readFileSync(path.resolve(__dirname, `./datas/${fileName}/lines.txt`))}`.split('\n'),
-        expected: JSON.parse(`${fs.readFileSync(path.resolve(__dirname, `./datas/${fileName}/expected.json`))}`),
+        raw: `${fs.readFileSync(path.resolve(dataDir, `${fileName}/raw.txt`))}`,
+        lines: `${fs.readFileSync(path.resolve(dataDir, `${fileName}/lines.txt`))}`.split('\n'),
+        expected: JSON.parse(`${fs.readFileSync(path.resolve(dataDir, `${fileName}/expected.json`))}`),
       },
     ], [])
   ;
