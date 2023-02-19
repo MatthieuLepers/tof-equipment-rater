@@ -3,7 +3,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const CommandoClient = require('./js/classes/Client');
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const client = new CommandoClient({
   commandPrefix: '!',

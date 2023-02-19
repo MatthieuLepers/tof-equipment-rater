@@ -8,7 +8,7 @@ module.exports = class RateCommand extends Command {
       memberName: 'rate',
       group: 'divers',
       description: 'Rate an equipment part using screenshot.\n!rate and post your screenshot',
-      ownerOnly: process.env.DEV_MODE,
+      ownerOnly: process.env.DEV_MODE === 'true',
       guildOnly: false,
       throttling: {
         usages: 2,
