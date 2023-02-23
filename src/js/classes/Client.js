@@ -18,12 +18,19 @@ module.exports = class BotClient extends CommandoClient {
       removeOnSuccess: true,
       removeOnFailure: true,
     });
-    this.rateQueue.process(async (jb) => {
-      const text = await getTextFromImage(jb.data.file.url);
+    this.rateQueue.process(async (job) => {
+      this.logger.log('info', `Processing job n°${job.id}`);
+      const text = await getTextFromImage(job.data.file.url);
       return text;
     });
 
-    this.on('ready', () => this.logger.log('info', 'Bot is ready !'));
+    this.on('ready', () => {
+      this.logger.log('info', 'Bot is ready !');
+      if (process.env.DEV_MODE === 'true') {
+        this.logger.log('info', 'Dev mode is enabled');
+      }
+      this.user.setStatus(process.env.DEV_MODE === 'true' ? 'invisible' : 'online');
+    });
     this.on('debug', (m) => this.logger.log('debug', m));
     this.on('warn', (m) => this.logger.log('warn', m));
     this.on('error', (m) => this.logger.log('error', m));

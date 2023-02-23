@@ -7,6 +7,7 @@ const dataDir = path.resolve(__dirname, '../datas');
 const data = fs
   .readdirSync(dataDir)
   .filter((file) => /^[0-9]+$/.test(file) && fs.statSync(path.resolve(dataDir, file)).isDirectory())
+  // .filter((file) => [5].includes(parseInt(file, 10)))
   .reduce((acc, fileName) => [
     ...acc,
     {

@@ -1,0 +1,5 @@
+Brassards de la forteresse
+Resistance +334
+PV +4125
+Attaque de feu +361
+Attaque de givre +613

@@ -69,3 +69,4 @@ Actually, the bot is hosted at Amazon Web Service on a "t2.small" EC2 instance, 
 - Optimize stats recognition logic
 - Throw better errors and send better error description to the user
 - Add better log system
+- Add TypeScript

@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "armor",
+  "stats": {
+    "voltRes": 1001,
+    "voltAtk": 69,
+    "frostAtk": 508,
+    "hp": 39779
+  }
+}

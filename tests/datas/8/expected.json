@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "bracers",
+  "stats": {
+    "res": 334,
+    "hp": 4125,
+    "flameAtk": 361,
+    "frostAtk": 613
+  }
+}

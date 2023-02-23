@@ -1,0 +1,5 @@
+Armure de la forteresse
+Resistance a la foudre +1001
+Attaque de foudre +69
+Attaque de givre +508
+PV +39779

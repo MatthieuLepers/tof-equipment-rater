@@ -1,0 +1,5 @@
+Machine de combat de la
+Attaque de feu +467
+PV +4125
+Attaque de givre +4,14%
+Bonus de degats de foudre +1,37%

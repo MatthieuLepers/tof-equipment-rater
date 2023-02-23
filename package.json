@@ -10,9 +10,9 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "start:prod": "NODE_ENV=production pm2 kill && pm2 start src/index.js",
-    "start:dev": "NODE_ENV=development pm2 kill && pm2 start src/index.js",
-    "start:local": "NODE_ENV=local node src/index.js",
+    "start:prod": "cross-env NODE_ENV=production pm2 kill && pm2 start src/index.js",
+    "start:dev": "cross-env NODE_ENV=development pm2 kill && pm2 start src/index.js",
+    "start:local": "cross-env NODE_ENV=local node src/index.js",
     "build": "rimraf ./dist && copyfiles -u 1 ./src/**/* ./dist/",
     "lint": "eslint --ext .js -f ./node_modules/eslint-friendly-formatter src",
     "lint:fix": "eslint --ext .js -f ./node_modules/eslint-friendly-formatter --fix src",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "copyfiles": "^2.4.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.32.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-friendly-formatter": "^4.0.1",

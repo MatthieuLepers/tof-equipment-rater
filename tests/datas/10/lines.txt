@@ -1,0 +1,5 @@
+Garde-jambes de la forteresse
+Attaque +240
+Resistance au givre +215
+Attaque de givre +886
+Attaque de foudre +292

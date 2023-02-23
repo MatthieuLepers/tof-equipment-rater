@@ -25,7 +25,7 @@ const Logic = (logger) => {
   // ;
 
   const partRegex = /^([A-Za-z -]+)(?:[0-9]+)?.*$/;
-  const statRegex = /^(?:.{0,2} )?([A-Za-z ]+\+[0-9,.]+%?).*$/;
+  const statRegex = /^(?:.{0,4} )?([A-Za-z ]+\+[0-9,.]+%?).*$/;
   const getLinesFromOCR = (ocrText) => {
     const lines = normalize(ocrText)
       .split('\n')
@@ -48,7 +48,7 @@ const Logic = (logger) => {
     }
 
     const [partLine, ...statLines] = lines;
-    return [partLine, ...statLines.slice(statLines.length - 4)];
+    return [partLine, ...statLines.slice(-4)];
   };
 
   const getPartType = (line) => (locale) => {

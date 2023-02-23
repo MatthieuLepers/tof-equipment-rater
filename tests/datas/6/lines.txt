@@ -1,0 +1,5 @@
+Machine de combat de la
+Attaque +683
+PV +0,94%
+Attaque physique +69
+Bonus de degats de givre +1,37%

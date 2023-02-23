@@ -1,0 +1,35 @@
+  
+ 
+   
+
+   
+
+Machine de combat de la
+
+forteresse =
+
+< <8 \N\ < <
+P S
+
+FC : 4392
+
+ 
+
+Renforcement débloqué
+;/ Attaque +52
+
+& PV +4608
+
+Stats aléatoires
+;/ Attaque +683
+
+& PV +0,94%
+;/ Attaque physique +69
+सुवि Bonus de dégats de givre +1,37%
+
+~—
+
+La derniére création des scientifiques
+d'Hykros. Fournit un soutien élémentaire
+
+_____ e e

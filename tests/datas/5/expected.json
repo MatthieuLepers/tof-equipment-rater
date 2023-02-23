@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "combatEngine",
+  "stats": {
+    "flameAtk": 467,
+    "hp": 4125,
+    "frostAtk%": 4.14,
+    "voltDmgBoost%": 1.37
+  }
+}

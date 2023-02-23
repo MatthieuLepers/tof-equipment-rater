@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "legguards",
+  "stats": {
+    "atk": 240,
+    "frostRes": 215,
+    "frostAtk": 886,
+    "voltAtk": 292
+  }
+}

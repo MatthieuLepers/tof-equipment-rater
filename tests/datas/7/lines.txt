@@ -1,0 +1,5 @@
+Viseur tactique de la forteresse
+PV +20809
+Taux de crit +4,62%
+Resistance physique +215
+Attaque alteree +395
