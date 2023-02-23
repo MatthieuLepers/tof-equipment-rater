@@ -17,6 +17,12 @@ module.exports = class BotClient extends CommandoClient {
     this.rateQueue = new Queue('RateQueue', {
       removeOnSuccess: true,
       removeOnFailure: true,
+      redis: {
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: 6379,
+        username: process.env.REDIS_USER,
+        password: process.env.REDIS_PASS,
+      },
     });
     this.rateQueue.process(async (job) => {
       this.logger.log('info', `Processing job n°${job.id}`);

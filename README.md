@@ -47,10 +47,19 @@ Install npm dependencies with `npm i`
 
 You will not be able to run the bot locally without the `.env.local` file containing these informations :
 ```
-BOT_TOKEN=<your_bot_token>
-OWNER_ID=<your_discord_unique_id>
 DEV_MODE=true
+DISCORD_BOT_TOKEN=<your_bot_token>
+DISCORD_OWNER_ID=<your_discord_unique_id>
+REDIS_HOST=<ip_of_your_redis_instance>
+REDIS_USER=<username_of_redis_instance>
+REDIS_PASS=<password_for_redis_user>
 ```
+
+You will need :
+
+- to make sure you have node.js v16.x installed on your system
+- to install redis on your system *or* fill `REDIS_` env vars with a distant redis instance
+- to have your own test discord bot *and* fill `DISCORD_` env vars correctly
 
 Don't forget to make a pull request with few commits and check if tests are still passing using `npm run tests`.
 
@@ -67,6 +76,6 @@ Actually, the bot is hosted at Amazon Web Service on a "t2.small" EC2 instance, 
 - Configure AWS with github actions to auto-deploy the bot when push on master (I need help for that)
 - Return more rate usage for parts and Vera parts
 - Optimize stats recognition logic
-- Throw better errors and send better error description to the user
-- Add better log system
 - Add TypeScript
+- ~~Throw better errors and send better error description to the user~~
+- ~~Add better log system~~

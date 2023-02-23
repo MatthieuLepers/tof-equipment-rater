@@ -19,8 +19,7 @@ module.exports = class RateCommand extends Command {
   }
 
   async run(msg) {
-    const [attachment] = msg.attachments;
-    const [, ...files] = attachment;
+    const files = [...msg.attachments.values()];
 
     if (!files.length) {
       msg.reply('No screenshot found, my job ends there.');
@@ -36,6 +35,8 @@ module.exports = class RateCommand extends Command {
       return true;
     });
 
+    if (!filteredFiles.length) return;
+
     const jobs = await serial(filteredFiles.map((file) => async () => {
       // Send to user see notification
       await msg.react('👀');
@@ -47,7 +48,7 @@ module.exports = class RateCommand extends Command {
 
       // On job success
       job.on('succeeded', async (ocrText) => {
-        this.client.logger.log(`Received result for job ${job.id}: "${ocrText}"`);
+        this.client.logger.log('info', `Received result for job ${job.id}: "${ocrText}"`);
 
         try {
           const part = Part.fromOCR(ocrText, this.client.logger);

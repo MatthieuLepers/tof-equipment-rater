@@ -7,7 +7,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const client = new CommandoClient({
   commandPrefix: '!',
-  owner: process.env.OWNER_ID,
+  owner: process.env.DISCORD_OWNER_ID,
   disableMentions: 'everyone',
 });
 
@@ -19,4 +19,4 @@ client.registry
   .registerCommandsIn(path.join(__dirname, 'commands'))
 ;
 
-client.login(process.env.BOT_TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
