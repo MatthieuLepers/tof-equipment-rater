@@ -35,6 +35,7 @@ module.exports = class BotClient extends CommandoClient {
       if (process.env.DEV_MODE === 'true') {
         this.logger.log('info', 'Dev mode is enabled');
       }
+      this.logger.log('info', `Running app in "${process.env.NODE_ENV}" environment`);
       this.user.setStatus(process.env.DEV_MODE === 'true' ? 'invisible' : 'online');
     });
     this.on('debug', (m) => this.logger.log('debug', m));

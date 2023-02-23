@@ -10,8 +10,8 @@
   },
   "main": "src/index.js",
   "scripts": {
-    "start:prod": "pm2 kill && pm2 start pm2.json --env production",
-    "start:dev": "pm2 kill && pm2 start pm2.json --env development",
+    "start:prod": "pm2 kill && pm2 start ecosystem.config.js --env production",
+    "start:dev": "pm2 kill && pm2 start ecosystem.config.js --env development",
     "start:local": "cross-env NODE_ENV=local node src/index.js",
     "build": "rimraf ./dist && copyfiles -u 1 ./src/**/* ./dist/",
     "lint": "eslint --ext .js -f ./node_modules/eslint-friendly-formatter src",
