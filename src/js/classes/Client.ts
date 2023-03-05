@@ -1,10 +1,21 @@
-const { CommandoClient } = require('discord.js-commando');
-const winston = require('winston');
-const Queue = require('bee-queue');
-const { default: getTextFromImage } = require('node-text-from-image');
+import { MessageAttachment } from 'discord.js';
+import { CommandoClient, CommandoClientOptions } from 'discord.js-commando';
+import winston from 'winston';
+import Queue from 'bee-queue';
+import getTextFromImage from 'node-text-from-image';
+import type { ILogger } from '@/js/types';
 
-module.exports = class BotClient extends CommandoClient {
-  constructor(options) {
+interface IRateJob {
+  file: MessageAttachment;
+  author: string;
+}
+
+export default class BotClient extends CommandoClient {
+  logger: ILogger;
+
+  rateQueue: Queue;
+
+  constructor(options: CommandoClientOptions) {
     super(options);
 
     this.logger = winston.createLogger({
@@ -24,7 +35,7 @@ module.exports = class BotClient extends CommandoClient {
         password: process.env.REDIS_PASS,
       },
     });
-    this.rateQueue.process(async (job) => {
+    this.rateQueue.process(async (job: Queue.Job<IRateJob>) => {
       this.logger.log('info', `Processing job n°${job.id}`);
       const text = await getTextFromImage(job.data.file.url);
       return text;
@@ -36,7 +47,7 @@ module.exports = class BotClient extends CommandoClient {
         this.logger.log('info', 'Dev mode is enabled');
       }
       this.logger.log('info', `Running app in "${process.env.NODE_ENV}" environment`);
-      this.user.setStatus(process.env.DEV_MODE === 'true' ? 'invisible' : 'online');
+      this.user?.setStatus(process.env.DEV_MODE === 'true' ? 'invisible' : 'online');
     });
     this.on('debug', (m) => this.logger.log('debug', m));
     this.on('warn', (m) => this.logger.log('warn', m));
@@ -44,4 +55,4 @@ module.exports = class BotClient extends CommandoClient {
 
     process.on('uncaughtException', (error) => this.logger.log('error', error));
   }
-};
+}

@@ -1,7 +1,7 @@
 // Invit BOT : https://discord.com/api/oauth2/authorize?client_id=1068967987903746098&permissions=274878024768&scope=bot
-const path = require('path');
-const dotenv = require('dotenv');
-const CommandoClient = require('./js/classes/Client');
+import path from 'path';
+import dotenv from 'dotenv';
+import CommandoClient from '@/js/classes/Client';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 

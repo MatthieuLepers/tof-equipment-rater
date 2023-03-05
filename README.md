@@ -73,9 +73,12 @@ Actually, the bot is hosted at Amazon Web Service on a "t2.small" EC2 instance, 
 
 ## TODO list
 
-- Configure AWS with github actions to auto-deploy the bot when push on master (I need help for that)
+- Configure AWS with github actions to auto-deploy the bot when push on master
 - Return more rate usage for parts and Vera parts
 - Optimize stats recognition logic
-- Add TypeScript
+- Use external OCR API to prevent CPU usage
+- Use a database to store rate request until they are processed and to prevent job loss
+- Save screenshots on disk or cloud storage solution until they are processed by OCR solution
+- ~~Add TypeScript~~
 - ~~Throw better errors and send better error description to the user~~
 - ~~Add better log system~~

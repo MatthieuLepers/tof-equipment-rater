@@ -36,7 +36,7 @@
       "frostRes": ["Frost Resistance"],
       "voltRes": ["Volt Resistance"],
       "flameRes": ["Flame Resistance"],
-      "phisicalRes": ["Physical Resistance"],
+      "physicalRes": ["Physical Resistance"],
       "alteredRes": ["Altered Resistance"],
       "hp": ["HP"],
       "crit": ["Crit"]

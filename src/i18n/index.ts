@@ -1,9 +1,10 @@
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import type { TLocalesData } from '@/js/types';
 
-const i18n = fs
+const i18n: TLocalesData = fs
   .readdirSync(path.resolve(__dirname, './'))
-  .reduce((acc, file) => {
+  .reduce((acc: TLocalesData, file: string) => {
     if (!file.endsWith('.json')) return acc;
     const localeData = JSON.parse(`${fs.readFileSync(path.resolve(__dirname, './', file))}`);
     return {
@@ -13,4 +14,4 @@ const i18n = fs
   }, {})
 ;
 
-module.exports = i18n;
+export default i18n;

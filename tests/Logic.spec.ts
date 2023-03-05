@@ -1,21 +1,17 @@
-const fs = require('fs');
-const path = require('path');
-const {
-  getLinesFromOCR,
-  getLocale,
-  getPartType,
-  getStatType,
-  getPartDataFromOCR,
-} = require('../src/js/Logic')(console);
+import fs from 'fs';
+import path from 'path';
+import Logic from '@/js/Logic';
+import { IData } from '@tests/types';
 
-let data = [];
+let data: IData[] = [];
+const logic = new Logic(console);
 const dataDir = path.resolve(__dirname, './datas');
 
 beforeAll(() => {
   data = fs
     .readdirSync(dataDir)
-    .filter((file) => /^[0-9]+$/.test(file) && fs.statSync(path.resolve(dataDir, file)).isDirectory())
-    .reduce((acc, fileName) => [
+    .filter((file: string) => /^[0-9]+$/.test(file) && fs.statSync(path.resolve(dataDir, file)).isDirectory())
+    .reduce((acc: IData[], fileName: string) => [
       ...acc,
       {
         index: parseInt(fileName, 10),
@@ -29,14 +25,14 @@ beforeAll(() => {
 
 test('getLinesFromOCR is accurate', () => {
   data.forEach((obj) => {
-    expect(getLinesFromOCR(obj.raw)).toEqual(obj.lines);
+    expect(logic.getLinesFromOCR(obj.raw)).toEqual(obj.lines);
   });
 });
 
 test('getLocale is accurate', () => {
   data.forEach((obj) => {
     const [line] = obj.lines;
-    expect(getLocale(line)).toBe(obj.expected.locale);
+    expect(logic.getLocale(line)).toBe(obj.expected.locale);
   });
 });
 
@@ -44,7 +40,7 @@ test('getPartType is accurate', () => {
   data.forEach((obj) => {
     const [line] = obj.lines;
     const expectedLocale = obj.expected.locale;
-    expect(getPartType(line)(expectedLocale)).toBe(obj.expected.type);
+    expect(logic.getPartType(line, expectedLocale)).toBe(obj.expected.type);
   });
 });
 
@@ -57,7 +53,7 @@ test('getStatType is accurate', () => {
       .map((statType) => statType.replace('%', ''))
     ;
     const parsedStatTypes = statLines
-      .map((statLine) => getStatType(statLine)(expectedLocale))
+      .map((statLine) => logic.getStatType(statLine, expectedLocale))
     ;
     expect(parsedStatTypes).toEqual(expect.arrayContaining(expectedStatTypes));
   });
@@ -65,6 +61,6 @@ test('getStatType is accurate', () => {
 
 test('getPartDataFromOCR is accurate', () => {
   data.forEach((obj) => {
-    expect(getPartDataFromOCR(obj.raw)).toEqual(obj.expected);
+    expect(logic.getPartDataFromOCR(obj.raw)).toEqual(obj.expected);
   });
 });

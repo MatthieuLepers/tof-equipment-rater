@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'bot',
-      script: './src/index.js',
+      script: './dist/index.js',
       env_production: {
         NODE_ENV: 'production',
       },

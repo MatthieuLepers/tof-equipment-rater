@@ -1,13 +1,15 @@
-const { Command } = require('discord.js-commando');
-const Part = require('../../js/classes/Part');
-const { serial } = require('../../js/utils/PromiseUtils');
+import { Command, CommandoMessage } from 'discord.js-commando';
+import { Message } from 'discord.js';
+import Part from '@/js/classes/Part';
+import { serial } from '@/js/utils/PromiseUtils';
+import type BotClient from '@/js/classes/Client';
 
-module.exports = class RateCommand extends Command {
-  constructor(client) {
+export default class RateCommand extends Command {
+  constructor(public client: BotClient) {
     super(client, {
       name: 'rate',
-      memberName: 'rate',
       group: 'divers',
+      memberName: 'rate',
       description: 'Rate an equipment part using screenshots.\n!rate and post your screenshots',
       ownerOnly: process.env.DEV_MODE === 'true',
       guildOnly: false,
@@ -18,29 +20,24 @@ module.exports = class RateCommand extends Command {
     });
   }
 
-  async run(msg) {
+  async run(msg: CommandoMessage): Promise<Message | Message[]> {
     const files = [...msg.attachments.values()];
 
     if (!files.length) {
-      msg.reply('No screenshot found, my job ends there.');
-      return;
+      return msg.reply('No screenshot found, my job ends there.');
     }
 
     const filteredFiles = files.filter((file) => {
-      const fileExt = file.name.replace(/^.*\.(jpe?g|png)$/, '$1');
+      const fileExt = file.name!.replace(/^.*\.(jpe?g|png)$/, '$1');
       if (!['jpg', 'jpeg', 'png'].includes(fileExt)) {
-        msg.reply('I do not support this type of file, try with a *.png or *.jpg');
         return false;
       }
       return true;
     });
 
-    if (!filteredFiles.length) return;
+    if (!filteredFiles.length) return msg.reply('I do not support this type of file, try with a *.png or *.jpg');
 
     const jobs = await serial(filteredFiles.map((file) => async () => {
-      // Send to user see notification
-      await msg.react('👀');
-
       // Create OCR job and enqueue it
       const { username, tag } = msg.author;
       const job = this.client.rateQueue.createJob({ file, author: `${username}#${tag}` });
@@ -56,10 +53,8 @@ module.exports = class RateCommand extends Command {
           await msg.react('✅');
         } catch (e) {
           this.client.logger.log('error', e);
-          msg.reply(e.message);
+          msg.reply((e as Error).message);
           await msg.react('❌');
-        } finally {
-          await msg.reactions.resolve('👀').users.remove(this.client.user.id);
         }
       });
 
@@ -68,7 +63,6 @@ module.exports = class RateCommand extends Command {
         this.client.logger.log('error', err);
 
         msg.reply(err.message);
-        await msg.reactions.resolve('👀').users.remove(this.client.user.id);
         await msg.react('❌');
       });
 
@@ -76,6 +70,10 @@ module.exports = class RateCommand extends Command {
     }));
 
     // Warn user about new queue system
-    msg.reply(`Hi! I have received your rate request and have palced ${jobs.length} task${jobs.length > 1 ? 's' : ''} in the queue, I will mention you when I have the results.`);
+    return msg.reply(`Hi! I have received your rate request and have palced ${jobs.length} task${jobs.length > 1 ? 's' : ''} in the queue, I will mention you when I have the results.`);
   }
-};
+
+  usage(): string {
+    return '`!rate` : Rate an equipment screenshot';
+  }
+}
