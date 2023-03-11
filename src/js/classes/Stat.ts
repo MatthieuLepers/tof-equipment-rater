@@ -21,7 +21,7 @@ export default class Stat {
 
   get name(): string {
     const [name] = i18n[this.locale].stats[this.type.replace('%', '') as StatTypeEnum];
-    return name;
+    return `${name}${this.type.endsWith('%') ? ' (%)' : ''}`;
   }
 
   get dpsName(): string {

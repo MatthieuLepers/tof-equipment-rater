@@ -1,11 +1,14 @@
 import { Command, CommandoMessage } from 'discord.js-commando';
-import { Message } from 'discord.js';
-import Part from '@/js/classes/Part';
+import type { Message } from 'discord.js';
+
 import { serial } from '@/js/utils/PromiseUtils';
+import type { IRateJob } from '@/js/types';
 import type BotClient from '@/js/classes/Client';
 
 export default class RateCommand extends Command {
-  constructor(public client: BotClient) {
+  declare client: BotClient;
+
+  constructor(client: BotClient) {
     super(client, {
       name: 'rate',
       group: 'divers',
@@ -38,39 +41,19 @@ export default class RateCommand extends Command {
     if (!filteredFiles.length) return msg.reply('I do not support this type of file, try with a *.png or *.jpg');
 
     const jobs = await serial(filteredFiles.map((file) => async () => {
-      // Create OCR job and enqueue it
-      const { username, tag } = msg.author;
-      const job = this.client.rateQueue.createJob({ file, author: `${username}#${tag}` });
-      await job.save();
-
-      // On job success
-      job.on('succeeded', async (ocrText) => {
-        this.client.logger.log('info', `Received result for job ${job.id}: "${ocrText}"`);
-
-        try {
-          const part = Part.fromOCR(ocrText, this.client.logger);
-          msg.reply(`\`\`\`${part.rate()}\`\`\``);
-          await msg.react('✅');
-        } catch (e) {
-          this.client.logger.log('error', e);
-          msg.reply((e as Error).message);
-          await msg.react('❌');
-        }
-      });
-
-      // On job failed
-      job.on('failed', async (err) => {
-        this.client.logger.log('error', err);
-
-        msg.reply(err.message);
-        await msg.react('❌');
-      });
-
+      const jobData: IRateJob = {
+        fileUrl: file.url,
+        authorId: msg.author.id,
+        channelId: msg.channel.id,
+        messageId: msg.id,
+        createdAt: new Date(),
+      };
+      const job = await this.client.rateQueue.createRateJob(jobData, msg, true);
       return job;
     }));
 
     // Warn user about new queue system
-    return msg.reply(`Hi! I have received your rate request and have palced ${jobs.length} task${jobs.length > 1 ? 's' : ''} in the queue, I will mention you when I have the results.`);
+    return msg.reply(`Hi! I have received your rate request and have placed ${jobs.length} task${jobs.length > 1 ? 's' : ''} in the queue, I will mention you when I have the results.`);
   }
 
   usage(): string {

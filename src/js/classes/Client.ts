@@ -1,47 +1,34 @@
-import { MessageAttachment } from 'discord.js';
 import { CommandoClient, CommandoClientOptions } from 'discord.js-commando';
-import winston from 'winston';
-import Queue from 'bee-queue';
-import getTextFromImage from 'node-text-from-image';
-import type { ILogger } from '@/js/types';
+import Sequelize from 'sequelize/types/sequelize';
 
-interface IRateJob {
-  file: MessageAttachment;
-  author: string;
-}
+import SequelizeInstance from '@/js/db';
+import { JobModel } from '@/js/db/models';
+import RateQueue from '@/js/classes/queue/RateQueue';
+import WinstonInstance from '@/js/utils/WinstonInstance';
+import type { ILogger } from '@/js/types';
 
 export default class BotClient extends CommandoClient {
   logger: ILogger;
 
-  rateQueue: Queue;
+  rateQueue: RateQueue;
+
+  database: Sequelize;
 
   constructor(options: CommandoClientOptions) {
     super(options);
 
-    this.logger = winston.createLogger({
-      transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'winston.log' }),
-      ],
-      format: winston.format.printf((log) => `[${new Date().toLocaleString()}] - [${log.level.toUpperCase()}] - ${log.message}`),
-    });
-    this.rateQueue = new Queue('RateQueue', {
-      removeOnSuccess: true,
-      removeOnFailure: true,
-      redis: {
-        host: process.env.REDIS_HOST || '127.0.0.1',
-        port: 6379,
-        username: process.env.REDIS_USER,
-        password: process.env.REDIS_PASS,
-      },
-    });
-    this.rateQueue.process(async (job: Queue.Job<IRateJob>) => {
-      this.logger.log('info', `Processing job n°${job.id}`);
-      const text = await getTextFromImage(job.data.file.url);
-      return text;
-    });
+    this.logger = WinstonInstance;
+    this.rateQueue = new RateQueue(this);
+    this.database = SequelizeInstance;
 
-    this.on('ready', () => {
+    this.on('ready', async () => {
+      await this.database.authenticate()
+        .then(() => { this.logger.log('info', 'Database connexion success'); })
+        .catch((e) => { this.logger.log('error', `Database connexion failed ${e}`); })
+      ;
+      await JobModel.sync();
+      await this.rateQueue.loadJobsFromDatabase();
+
       this.logger.log('info', 'Bot is ready !');
       if (process.env.DEV_MODE === 'true') {
         this.logger.log('info', 'Dev mode is enabled');
@@ -53,6 +40,6 @@ export default class BotClient extends CommandoClient {
     this.on('warn', (m) => this.logger.log('warn', m));
     this.on('error', (m) => this.logger.log('error', m));
 
-    process.on('uncaughtException', (error) => this.logger.log('error', error));
+    // process.on('uncaughtException', (error) => this.logger.log('error', error));
   }
 }

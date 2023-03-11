@@ -12,7 +12,7 @@
   "scripts": {
     "start:prod": "pm2 kill && pm2 start ecosystem.config.js --env production",
     "start:dev": "pm2 kill && pm2 start ecosystem.config.js --env development",
-    "start:local": "cross-env NODE_ENV=local ts-node src/index.ts",
+    "start:local": "cross-env NODE_ENV=local ts-node -r tsconfig-paths/register src/index.ts",
     "build": "rimraf ./dist && tsc --build",
     "lint": "eslint --ext .js,.ts -f ./node_modules/eslint-friendly-formatter src",
     "lint:fix": "eslint --ext .js,.ts -f ./node_modules/eslint-friendly-formatter --fix src",
@@ -27,6 +27,8 @@
     "node-fetch": "^2.6.8",
     "node-text-from-image": "^1.0.1",
     "pm2": "^5.2.2",
+    "sequelize": "^6.29.3",
+    "sqlite3": "^5.1.4",
     "winston": "^3.8.2"
   },
   "devDependencies": {
@@ -46,6 +48,7 @@
     "rimraf": "^4.1.2",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.2",
     "typescript": "^4.9.5"
   }
 }

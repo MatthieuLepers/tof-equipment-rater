@@ -1,0 +1,89 @@
+import BeeQueue from 'bee-queue';
+import getTextFromImage from 'node-text-from-image';
+import dotenv from 'dotenv';
+import type { Message } from 'discord.js';
+
+import { JobModel } from '@/js/db/models';
+import Part from '@/js/classes/Part';
+import type { IRateJob } from '@/js/types';
+import type BotClient from '@/js/classes/Client';
+
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
+
+export default class RateQueue extends BeeQueue {
+  constructor(public bot: BotClient) {
+    super('RateQueue', {
+      removeOnSuccess: true,
+      removeOnFailure: true,
+      redis: {
+        host: process.env.REDIS_HOST || '127.0.0.1',
+        port: 6379,
+        username: process.env.REDIS_USER,
+        password: process.env.REDIS_PASS,
+      },
+    });
+
+    this.process(async (job: BeeQueue.Job<IRateJob>) => {
+      this.bot.logger.log('info', `Processing job n°${job.id}`);
+      const text = await getTextFromImage(job.data.fileUrl);
+      return text;
+    });
+  }
+
+  async loadJobsFromDatabase() {
+    const dbJobs = await JobModel.findAll({
+      order: [
+        ['createdAt', 'DESC'],
+      ],
+    });
+    const results = await Promise.all(dbJobs.map((dbJob) => dbJob.asQueueJob(this.bot)));
+    const addedJobs = results.reduce((acc, val) => acc + Number(val), 0);
+    this.bot.logger.log('info', `${addedJobs} job${addedJobs > 1 ? 's' : ''} added to queue from database`);
+  }
+
+  async createRateJob(jobData: IRateJob, msg: Message, save = true): Promise<BeeQueue.Job<IRateJob>> {
+    // Create OCR job and enqueue it
+    const job = this.createJob<IRateJob>(jobData);
+    await job.save();
+
+    // On job success
+    job.on('succeeded', async (ocrText) => {
+      this.bot.logger.log('info', `Received result for job ${job.id}: "${ocrText}"`);
+
+      try {
+        const part = Part.fromOCR(ocrText, this.bot.logger);
+        msg.reply(`\`\`\`${part.rate()}\`\`\``);
+        await this.deleteJob(job.data);
+        await msg.react('✅');
+      } catch (e) {
+        this.bot.logger.log('error', e);
+        msg.reply((e as Error).message);
+        await msg.react('❌');
+      }
+    });
+
+    // On job failed
+    job.on('failed', async (err) => {
+      this.bot.logger.log('error', err);
+
+      msg.reply(err.message);
+      await msg.react('❌');
+    });
+
+    if (save) {
+      await JobModel.import(job);
+    }
+
+    return job;
+  }
+
+  async deleteJob(jobData: IRateJob) {
+    await JobModel.destroy({
+      where: {
+        authorId: jobData.authorId,
+        channelId: jobData.channelId,
+        messageId: jobData.messageId,
+      },
+    });
+  }
+}

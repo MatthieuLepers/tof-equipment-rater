@@ -2,6 +2,7 @@ dist/
 .env*
 node_modules/
 *.log
+*.sqlite
 tests/datas/**/*.jpg
 tests/datas/**/*.jpeg
 tests/datas/**/*.png
