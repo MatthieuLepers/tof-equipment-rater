@@ -96,7 +96,7 @@ export default {
     min: 468,
     max: 1169,
   },
-  'crit%': {
+  'critRate%': {
     initial: 1.05,
     min: 1.19,
     max: 1.19,
