@@ -4,7 +4,7 @@ import type { ILogger, OCRPartData } from '@/js/types';
 import type { PartTypeEnum, StatTypeEnum } from '@/js/types/enums';
 
 export default class Logic {
-  constructor(public logger: ILogger) {}
+  constructor(public logger: ILogger, public userLocale: string | undefined) {}
 
   normalize(str: string): string {
     return str
@@ -110,12 +110,16 @@ export default class Logic {
     let locale: string | undefined;
     let partType: PartTypeEnum | undefined;
 
-    try {
-      locale = this.getLocale(line);
-      if (!locale) throw new Error('No locale found');
-    } catch (e) {
-      this.logger.log('error', 'I do not recognize the language in which the text is written, I only support English and French', line, e);
-      throw new Error('I do not recognize the language in which the text is written, I only support English and French');
+    if (this.userLocale) {
+      locale = this.userLocale;
+    } else {
+      try {
+        locale = this.getLocale(line);
+        if (!locale) throw new Error('No locale found');
+      } catch (e) {
+        this.logger.log('error', 'I do not recognize the language in which the text is written, I only support English and French', line, e);
+        throw new Error('I do not recognize the language in which the text is written, I only support English and French');
+      }
     }
 
     try {

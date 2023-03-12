@@ -20,8 +20,8 @@ export default class Part {
     return i18n[this.locale].parts[this.type];
   }
 
-  static fromOCR(ocrText: string, logger: ILogger): Part {
-    const { locale, type, stats } = new Logic(logger).getPartDataFromOCR(ocrText);
+  static fromOCR(ocrText: string, logger: ILogger, userLocale: string | undefined): Part {
+    const { locale, type, stats } = new Logic(logger, userLocale).getPartDataFromOCR(ocrText);
     return new Part(
       locale,
       type,

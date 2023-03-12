@@ -12,6 +12,14 @@ class UserSettingsModel extends Model<InferAttributes<UserSettingsModel>, InferC
 
   declare locale: string;
 
+  static async getLocale(userId: string): Promise<string | undefined> {
+    const settings = await UserSettingsModel.findOne({
+      where: { userId },
+    });
+
+    return settings?.locale;
+  }
+
   static async setLocale(userId: string, locale: string) {
     await UserSettingsModel.findOrCreate({
       where: { userId },

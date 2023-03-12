@@ -2,7 +2,7 @@ import BeeQueue from 'bee-queue';
 import dotenv from 'dotenv';
 import type { Message } from 'discord.js';
 
-import { JobModel } from '@/js/db/models';
+import { JobModel, UserSettingsModel } from '@/js/db/models';
 import Part from '@/js/classes/Part';
 import type { IRateJob } from '@/js/types';
 import type BotClient from '@/js/classes/Client';
@@ -51,7 +51,9 @@ export default class RateQueue extends BeeQueue {
       this.bot.logger.log('info', `Received result for job ${job.id}: "${ocrText}"`);
 
       try {
-        const part = Part.fromOCR(ocrText, this.bot.logger);
+        const locale = await UserSettingsModel.getLocale(msg.author.id);
+        const part = Part.fromOCR(ocrText, this.bot.logger, locale);
+        await UserSettingsModel.setLocale(msg.author.id, part.locale);
         msg.reply(`\`\`\`${part.rate()}\`\`\``);
         await this.deleteJob(job.data);
         await msg.react('✅');
