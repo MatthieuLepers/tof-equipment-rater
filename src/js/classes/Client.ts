@@ -2,7 +2,7 @@ import { CommandoClient, CommandoClientOptions } from 'discord.js-commando';
 import Sequelize from 'sequelize/types/sequelize';
 
 import SequelizeInstance from '@/js/db';
-import { JobModel } from '@/js/db/models';
+import { JobModel, UserSettingsModel } from '@/js/db/models';
 import RateQueue from '@/js/classes/queue/RateQueue';
 import WinstonInstance from '@/js/utils/WinstonInstance';
 import type { ILogger } from '@/js/types';
@@ -27,6 +27,7 @@ export default class BotClient extends CommandoClient {
         .catch((e) => { this.logger.log('error', `Database connexion failed ${e}`); })
       ;
       await JobModel.sync();
+      await UserSettingsModel.sync();
       await this.rateQueue.loadJobsFromDatabase();
 
       this.logger.log('info', 'Bot is ready !');
@@ -40,6 +41,8 @@ export default class BotClient extends CommandoClient {
     this.on('warn', (m) => this.logger.log('warn', m));
     this.on('error', (m) => this.logger.log('error', m));
 
-    // process.on('uncaughtException', (error) => this.logger.log('error', error));
+    if (process.env.DEV_MODE !== 'true') {
+      process.on('uncaughtException', (error) => this.logger.log('error', error));
+    }
   }
 }

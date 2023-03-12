@@ -1,0 +1,10 @@
+{
+  "locale": "en-EN",
+  "type": "tacticsEyepiece",
+  "stats": {
+    "critRate%": 7,
+    "atk": 52,
+    "hp": 4125,
+    "voltRes%": 7.87
+  }
+}

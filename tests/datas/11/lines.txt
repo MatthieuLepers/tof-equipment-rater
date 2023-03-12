@@ -1,0 +1,5 @@
+Fortress Tactics Eyepiece
+Crit Rate +7%
+Attack +52
+HP +4,125
+Volt Resistance +7.87%

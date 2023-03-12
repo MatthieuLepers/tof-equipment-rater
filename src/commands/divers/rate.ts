@@ -13,11 +13,11 @@ export default class RateCommand extends Command {
       name: 'rate',
       group: 'divers',
       memberName: 'rate',
-      description: 'Rate an equipment part using screenshots.\n!rate and post your screenshots',
+      description: 'Rate an equipment part using screenshots.',
       ownerOnly: process.env.DEV_MODE === 'true',
       guildOnly: false,
       throttling: {
-        usages: 1,
+        usages: 2,
         duration: 30,
       },
     });
@@ -27,7 +27,7 @@ export default class RateCommand extends Command {
     const files = [...msg.attachments.values()];
 
     if (!files.length) {
-      return msg.reply('No screenshot found, my job ends there.');
+      return msg.reply('No screenshot found, my job ends here.');
     }
 
     const filteredFiles = files.filter((file) => {
@@ -57,6 +57,8 @@ export default class RateCommand extends Command {
   }
 
   usage(): string {
-    return '`!rate` : Rate an equipment screenshot';
+    return [
+      '**Usage**: `!rate` : Rate an equipment screenshot',
+    ].join('\n');
   }
 }

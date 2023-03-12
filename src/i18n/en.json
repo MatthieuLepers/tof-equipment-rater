@@ -39,7 +39,8 @@
       "physicalRes": ["Physical Resistance"],
       "alteredRes": ["Altered Resistance"],
       "hp": ["HP"],
-      "crit": ["Crit"]
+      "crit": ["Crit"],
+      "critRate": ["Crit Rate"]
     },
     "dpsTypes": {
       "frost": "Frost DPS",

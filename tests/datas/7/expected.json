@@ -3,7 +3,7 @@
   "type": "tacticsEyepiece",
   "stats": {
     "hp": 20809,
-    "crit%": 4.62,
+    "critRate%": 4.62,
     "physicalRes": 215,
     "alteredAtk": 395
   }

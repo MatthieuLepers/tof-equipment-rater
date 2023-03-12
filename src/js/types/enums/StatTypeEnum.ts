@@ -29,5 +29,5 @@ export enum StatTypeEnum {
   HP = 'hp',
   HP_PERCENT = 'hp%',
   CRIT = 'crit',
-  CRIT_PERCENT = 'crit%',
+  CRITRATE_PERCENT = 'critRate%',
 }

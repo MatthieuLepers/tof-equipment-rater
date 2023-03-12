@@ -1,5 +1,4 @@
 import BeeQueue from 'bee-queue';
-import getTextFromImage from 'node-text-from-image';
 import dotenv from 'dotenv';
 import type { Message } from 'discord.js';
 
@@ -7,6 +6,7 @@ import { JobModel } from '@/js/db/models';
 import Part from '@/js/classes/Part';
 import type { IRateJob } from '@/js/types';
 import type BotClient from '@/js/classes/Client';
+import * as OcrSolutions from '@/ocr';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -25,7 +25,7 @@ export default class RateQueue extends BeeQueue {
 
     this.process(async (job: BeeQueue.Job<IRateJob>) => {
       this.bot.logger.log('info', `Processing job n°${job.id}`);
-      const text = await getTextFromImage(job.data.fileUrl);
+      const text = await OcrSolutions.tesseract.getTextFromImage(job.data.fileUrl);
       return text;
     });
   }

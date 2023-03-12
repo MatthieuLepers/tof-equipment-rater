@@ -4,6 +4,4 @@ export interface IPartData {
   stats: StatTypeEnum[];
 }
 
-export type TPartsData = {
-  [key in PartTypeEnum]: IPartData;
-};
+export type TPartsData = Record<PartTypeEnum, IPartData>;

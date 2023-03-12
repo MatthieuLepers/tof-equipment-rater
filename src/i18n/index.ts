@@ -1,17 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import type { TLocalesData } from '@/js/types';
+import type { ILocaleData, TLocalesData } from '@/js/types';
+import { getI18nFilesFromDir } from '@/js/utils/I18nUtils';
 
-const i18n: TLocalesData = fs
-  .readdirSync(path.resolve(__dirname, './'))
-  .reduce((acc: TLocalesData, file: string) => {
-    if (!file.endsWith('.json')) return acc;
-    const localeData = JSON.parse(`${fs.readFileSync(path.resolve(__dirname, './', file))}`);
-    return {
-      ...acc,
-      [localeData.locale]: localeData.datas,
-    };
-  }, {})
-;
-
-export default i18n;
+export default getI18nFilesFromDir<ILocaleData>(__dirname) as TLocalesData;

@@ -43,7 +43,7 @@ export default class Logic {
   getPartType(line: string, locale: string): PartTypeEnum | undefined {
     const dataset = i18n[locale].parts;
     const getBestDiffList = (partType: PartTypeEnum): Diff.Change | undefined => Diff
-      .diffWords(this.normalize(i18n[locale].parts[partType]), this.normalize(line.replace(/^([A-Za-z -]+)(?:[0-9]+)?.*$/, '$1').trim()))
+      .diffWords(this.normalize(dataset[partType]), this.normalize(line.replace(/^([A-Za-z -]+)(?:[0-9]+)?.*$/, '$1').trim()))
       .find((diff, i, arr) => diff.count === Math.max(...arr.map((t) => t.count ?? 0)))
     ;
     const [bestDiff] = Object
@@ -58,7 +58,7 @@ export default class Logic {
 
     return Object
       .keys(dataset)
-      .find((partType) => this.normalize(i18n[locale].parts[partType as PartTypeEnum]).includes(bestDiff?.value ?? '')) as (PartTypeEnum | undefined)
+      .find((partType) => this.normalize(dataset[partType as PartTypeEnum]).includes(bestDiff?.value ?? '')) as (PartTypeEnum | undefined)
     ;
   }
 
@@ -73,7 +73,7 @@ export default class Logic {
 
     const [bestDiff] = Object
       .keys(dataset)
-      .map((statType) => i18n[locale].stats[statType as StatTypeEnum].reduce((acc: Diff.Change[], statText: string) => {
+      .map((statType) => dataset[statType as StatTypeEnum].reduce((acc: Diff.Change[], statText: string) => {
         const diffList = getBestDiffList(statText);
         return diffList ? [...acc, diffList] : acc;
       }, []))
@@ -87,7 +87,7 @@ export default class Logic {
 
     return Object
       .keys(dataset)
-      .find((statType) => i18n[locale].stats[statType as StatTypeEnum]
+      .find((statType) => dataset[statType as StatTypeEnum]
         .map((t) => this.normalize(t))
         .includes(bestDiff?.value.trim())) as (StatTypeEnum | undefined)
     ;

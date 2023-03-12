@@ -39,7 +39,8 @@
       "physicalRes": ["Résistance physique"],
       "alteredRes": ["Résistance altérée"],
       "hp": ["PV"],
-      "crit": ["Crit", "Taux de crit"]
+      "crit": ["Crit"],
+      "critRate": ["Taux de crit"]
     },
     "dpsTypes": {
       "frost": "DPS givre",

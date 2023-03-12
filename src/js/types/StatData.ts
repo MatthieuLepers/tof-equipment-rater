@@ -6,6 +6,4 @@ export interface IStatData {
   max: number,
 }
 
-export type TStatsData = {
-  [key in StatTypeEnum]: IStatData;
-};
+export type TStatsData = Record<StatTypeEnum, IStatData>;

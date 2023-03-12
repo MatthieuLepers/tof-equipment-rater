@@ -6,11 +6,9 @@ export interface ILocaleData {
     decimalSeparator: string,
   },
   usableFor: string,
-  parts: { [key in PartTypeEnum]: string },
-  stats: { [key in StatTypeEnum]: string[] },
-  dpsTypes: { [key in ElementTypeEnum]: string },
+  parts: Record<PartTypeEnum, string>,
+  stats: Record<StatTypeEnum, string[]>,
+  dpsTypes: Record<ElementTypeEnum, string>,
 }
 
-export type TLocalesData = {
-  [key: string]: ILocaleData;
-};
+export type TLocalesData = Record<string, ILocaleData>;
