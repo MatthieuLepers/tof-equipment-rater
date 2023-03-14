@@ -6,15 +6,43 @@ module.exports = {
     node: true,
     jest: true,
   },
-  extends: 'airbnb-base',
+  extends: [
+    'airbnb-base',
+    'airbnb-typescript/base',
+  ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
+    project: ['./tsconfig.json'],
+  },
+  plugins: [
+    'import',
+    '@typescript-eslint',
+  ],
+  settings: {
+    'import/extensions': ['.js', '.jsx', '.ts', '.tsx'],
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+      alias: {
+        map: [
+          ['@', './src'],
+          ['@tests', './tests'],
+        ],
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+      },
+    },
   },
   rules: {
     'global-require': 'off',
     'import/no-dynamic-require': 'off',
     'import/extensions': ['error', 'always', {
       js: 'never',
+      ts: 'never',
     }],
     'no-param-reassign': ['error', {
       props: true,
@@ -23,6 +51,7 @@ module.exports = {
       ],
     }],
     'import/newline-after-import': 'off',
+    'import/prefer-default-export': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'linebreak-style': ['error', 'unix'],

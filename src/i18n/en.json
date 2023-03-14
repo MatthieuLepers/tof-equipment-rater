@@ -36,10 +36,11 @@
       "frostRes": ["Frost Resistance"],
       "voltRes": ["Volt Resistance"],
       "flameRes": ["Flame Resistance"],
-      "phisicalRes": ["Physical Resistance"],
+      "physicalRes": ["Physical Resistance"],
       "alteredRes": ["Altered Resistance"],
       "hp": ["HP"],
-      "crit": ["Crit"]
+      "crit": ["Crit"],
+      "critRate": ["Crit Rate"]
     },
     "dpsTypes": {
       "frost": "Frost DPS",

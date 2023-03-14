@@ -1,4 +1,6 @@
-module.exports = {
+import type { TPartsData } from '@/js/types/PartData';
+
+export default {
   helm: {
     stats: [
       'frostAtk', 'flameAtk', 'voltAtk', 'physicalAtk',
@@ -56,7 +58,7 @@ module.exports = {
     ],
   },
   combatEngine: {
-    possibleStats: [
+    stats: [
       'frostAtk', 'flameAtk', 'voltAtk', 'physicalAtk',
       'frostAtk%', 'flameAtk%', 'voltAtk%', 'physicalAtk%',
       'frostDmgBoost%', 'flameDmgBoost%', 'voltDmgBoost%', 'physicalDmgBoost%',
@@ -66,7 +68,7 @@ module.exports = {
     ],
   },
   tacticsEyepiece: {
-    possibleStats: [
+    stats: [
       'frostAtk', 'flameAtk', 'voltAtk', 'physicalAtk',
       'frostAtk%', 'flameAtk%', 'voltAtk%', 'physicalAtk%',
       'frostRes', 'flameRes', 'voltRes', 'physicalRes',
@@ -75,7 +77,7 @@ module.exports = {
     ],
   },
   microReactor: {
-    possibleStats: [
+    stats: [
       'frostAtk', 'flameAtk', 'voltAtk', 'physicalAtk', 'alteredAtk',
       'frostAtk%', 'flameAtk%', 'voltAtk%', 'physicalAtk%',
       'frostRes', 'flameRes', 'voltRes', 'physicalRes', 'alteredRes',
@@ -84,7 +86,7 @@ module.exports = {
     ],
   },
   exoskeleton: {
-    possibleStats: [
+    stats: [
       'frostAtk', 'flameAtk', 'voltAtk', 'physicalAtk',
       'frostAtk%', 'flameAtk%', 'voltAtk%', 'physicalAtk%',
       'frostDmgBoost%', 'flameDmgBoost%', 'voltDmgBoost%', 'physicalDmgBoost%',
@@ -93,4 +95,4 @@ module.exports = {
       'atk', 'res', 'hp', 'hp%',
     ],
   },
-};
+} as TPartsData;

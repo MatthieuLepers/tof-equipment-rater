@@ -1,0 +1,16 @@
+Fortress Tactics Eyepiece 28 -
+
+~ cs: 7190
+
+FLN
+
+Random Stats
+3 Crit Rate +7%
+
+# Attack +52
+
+& HP +4,125
+
+ 
+
+@ Volt Resistance +7.87%
