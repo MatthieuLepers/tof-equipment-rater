@@ -61,7 +61,7 @@ class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttributes<
 
 JobModel.init({
   id: {
-    type: DataTypes.NUMBER,
+    type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
