@@ -1,4 +1,5 @@
 // Invit BOT : https://discord.com/api/oauth2/authorize?client_id=1068967987903746098&permissions=274878024768&scope=bot
+import 'module-alias/register';
 import path from 'path';
 import dotenv from 'dotenv';
 import BotClient from '@/js/classes/Client';
