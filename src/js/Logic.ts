@@ -4,7 +4,7 @@ import type { ILogger, OCRPartData } from '@/js/types';
 import type { PartTypeEnum, StatTypeEnum } from '@/js/types/enums';
 
 export default class Logic {
-  constructor(public logger: ILogger, public userLocale: string | undefined) {}
+  constructor(public logger: ILogger, public userLocale?: string | undefined) {}
 
   normalize(str: string): string {
     return str
