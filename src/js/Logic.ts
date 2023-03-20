@@ -123,6 +123,7 @@ export default class Logic {
     }
 
     try {
+      console.log(line, locale);
       partType = this.getPartType(line, locale);
       if (!partType) throw new Error('No partType found');
     } catch (e) {

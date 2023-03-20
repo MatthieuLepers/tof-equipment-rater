@@ -5,6 +5,7 @@ const elementalAtk: Partial<TStatsData> = [
   StatTypeEnum.FROSTATK,
   StatTypeEnum.VOLTATK,
   StatTypeEnum.FLAMEATK,
+  StatTypeEnum.PHYSICALATK,
   StatTypeEnum.ALTEREDATK,
 ].reduce((acc: Partial<TStatsData>, statType: StatTypeEnum) => ({
   ...acc,

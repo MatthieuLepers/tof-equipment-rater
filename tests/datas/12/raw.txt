@@ -1,0 +1,13 @@
+Ceinture de la forteresse 30
+
+ 
+
+FC: 3719
+
+Stats aléatoires
+/ Attaque +235
+
+& PV +11960
+Q' Attaque de feu +904
+
+/ Attaque physique +69

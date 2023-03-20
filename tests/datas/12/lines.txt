@@ -1,0 +1,5 @@
+Ceinture de la forteresse
+Attaque +235
+PV +11960
+Attaque de feu +904
+Attaque physique +69

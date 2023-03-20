@@ -1,0 +1,10 @@
+{
+  "locale": "fr-FR",
+  "type": "belt",
+  "stats": {
+    "atk": 235,
+    "hp": 11960,
+    "flameAtk": 904,
+    "physicalAtk": 69
+  }
+}
