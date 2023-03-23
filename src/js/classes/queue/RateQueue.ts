@@ -1,6 +1,6 @@
 import BeeQueue from 'bee-queue';
 import dotenv from 'dotenv';
-import type { Message } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 
 import { JobModel, UserSettingsModel } from '@/js/db/models';
 import Part from '@/js/classes/Part';
@@ -42,7 +42,7 @@ export default class RateQueue extends BeeQueue {
     this.bot.logger.log('info', `${addedJobs} job${addedJobs > 1 ? 's' : ''} added to queue from database`);
   }
 
-  async createRateJob(jobData: IRateJob, msg: Message, save = true): Promise<BeeQueue.Job<IRateJob>> {
+  async createRateJob(jobData: IRateJob, channel: TextChannel, save = true): Promise<BeeQueue.Job<IRateJob>> {
     // Create OCR job and enqueue it
     const job = this.createJob<IRateJob>(jobData);
     await job.save();
@@ -51,28 +51,39 @@ export default class RateQueue extends BeeQueue {
     job.on('succeeded', async (ocrText) => {
       this.bot.logger.log('info', `Received result for job ${job.id}: "${ocrText}"`);
 
-      try {
-        const locale = await UserSettingsModel.getLocale(msg.author.id);
-        const part = Part.fromOCR(ocrText, this.bot.logger, locale);
-        await UserSettingsModel.setLocale(msg.author.id, part.locale);
-        await msg.reply(`\`\`\`${part.rate()}\`\`\``);
+      const user = channel.client.users.cache.get(jobData.authorId);
+      if (!user) {
         await this.deleteJob(job.data);
-        await msg.react('✅');
+        return;
+      }
+
+      try {
+        const locale = await UserSettingsModel.getLocale(jobData.authorId);
+        const part = Part.fromOCR(ocrText, this.bot.logger, locale);
+
+        const msg = await channel.messages.fetch(jobData.messageId).catch(() => null);
+        if (msg) {
+          await msg.delete();
+        }
+
+        await UserSettingsModel.setLocale(jobData.authorId, part.locale);
+        await channel.send({
+          content: `<@${jobData.authorId}>`,
+          embed: part.asMessageEmbed(job.data),
+        });
+        await this.deleteJob(job.data);
       } catch (e) {
         this.bot.logger.log('error', e);
-        await msg.reply((e as Error).message);
+        await channel.send((e as Error).message);
         await this.updateJob(job.data);
-        await msg.react('❌');
       }
     });
 
     // On job failed
     job.on('failed', async (err) => {
       this.bot.logger.log('error', err);
-
-      await msg.reply(err.message);
+      await channel.send(err.message);
       await this.updateJob(job.data);
-      await msg.react('❌');
     });
 
     if (save) {
@@ -80,6 +91,17 @@ export default class RateQueue extends BeeQueue {
     }
 
     return job;
+  }
+
+  async deleteMessageIfExists(channel: TextChannel, messageId: string) {
+    try {
+      const msg = await channel.messages.fetch(messageId);
+      if (msg) {
+        await msg.delete();
+      }
+    } catch (e) {
+      // Nothing to do
+    }
   }
 
   async deleteJob(jobData: IRateJob) {

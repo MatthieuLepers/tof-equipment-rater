@@ -5,7 +5,7 @@
       "thousandSeparator": ",",
       "decimalSeparator": "."
     },
-    "usableFor": "Usable for",
+    "usableFor": "Usable for :",
     "parts": {
       "helm": "Fortress Helm",
       "spaulders": "Fortress Spaulders",
@@ -39,8 +39,8 @@
       "physicalRes": ["Physical Resistance"],
       "alteredRes": ["Altered Resistance"],
       "hp": ["HP"],
-      "crit": ["Crit"],
-      "critRate": ["Crit Rate"]
+      "critRate": ["Crit Rate"],
+      "crit": ["Crit"]
     },
     "dpsTypes": {
       "frost": "Frost DPS",

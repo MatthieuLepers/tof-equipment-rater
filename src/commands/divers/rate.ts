@@ -1,5 +1,5 @@
 import { Command, CommandoMessage } from 'discord.js-commando';
-import type { Message } from 'discord.js';
+import type { Message, TextChannel } from 'discord.js';
 
 import { serial } from '@/js/utils/PromiseUtils';
 import type { IRateJob } from '@/js/types';
@@ -50,7 +50,7 @@ export default class RateCommand extends Command {
         updatedAt: new Date(),
         createdAt: new Date(),
       };
-      const job = await this.client.rateQueue.createRateJob(jobData, msg, true);
+      const job = await this.client.rateQueue.createRateJob(jobData, msg.channel as TextChannel, true);
       return job;
     }));
 

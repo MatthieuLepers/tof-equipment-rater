@@ -73,7 +73,7 @@ export default {
       'frostAtk%', 'flameAtk%', 'voltAtk%', 'physicalAtk%',
       'frostRes', 'flameRes', 'voltRes', 'physicalRes',
       'frostRes%', 'flameRes%', 'voltRes%', 'physicalRes%',
-      'atk', 'res', 'hp', 'hp%', 'crit%',
+      'atk', 'res', 'hp', 'hp%', 'critRate%',
     ],
   },
   microReactor: {

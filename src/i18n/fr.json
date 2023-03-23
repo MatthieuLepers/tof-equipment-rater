@@ -5,7 +5,7 @@
       "thousandSeparator": "",
       "decimalSeparator": ","
     },
-    "usableFor": "Utilisable pour",
+    "usableFor": "Utilisable pour :",
     "parts": {
       "helm": "Casque de la forteresse",
       "spaulders": "Épaulettes de la forteresse",
@@ -39,8 +39,8 @@
       "physicalRes": ["Résistance physique"],
       "alteredRes": ["Résistance altérée"],
       "hp": ["PV"],
-      "crit": ["Crit"],
-      "critRate": ["Taux de crit"]
+      "critRate": ["Taux de crit"],
+      "crit": ["Crit"]
     },
     "dpsTypes": {
       "frost": "DPS givre",

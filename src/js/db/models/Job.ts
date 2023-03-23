@@ -5,6 +5,7 @@ import {
   InferCreationAttributes,
 } from 'sequelize';
 import type Queue from 'bee-queue';
+import type { TextChannel } from 'discord.js';
 
 import SequelizeInstance from '@/js/db';
 import type { IRateJob } from '@/js/types';
@@ -48,20 +49,18 @@ class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttributes<
       updatedAt: this.updatedAt,
     };
 
-    const channel = await client.channels.fetch(this.channelId);
-    if (channel && channel.isText()) {
-      const msg = await channel.messages.fetch(this.messageId);
-      if (msg) {
-        await client.rateQueue.createRateJob(jobData, msg, false);
+    try {
+      const channel = await client.channels.fetch(this.channelId);
+      if (channel && channel.isText()) {
+        await client.rateQueue.createRateJob(jobData, channel as TextChannel, false);
         return true;
       }
-      client.logger.log('info', `Unable to find msg '${this.messageId}' in channel '${this.channelId}', aborting`);
-      await client.rateQueue.deleteJob(jobData);
-    } else {
       client.logger.log('info', `Unable to find channel '${this.channelId}', aborting`);
       await client.rateQueue.deleteJob(jobData);
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   static async import(job: Queue.Job<IRateJob>) {

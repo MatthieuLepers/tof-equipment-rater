@@ -3,7 +3,8 @@ import Logic from '@/js/Logic';
 import PartsData from '@/js/data/parts';
 import i18n from '@/i18n';
 import type { PartTypeEnum, StatTypeEnum } from '@/js/types/enums';
-import type { ILogger, IPartData } from '@/js/types';
+import type { ILogger, IPartData, IRateJob } from '@/js/types';
+import { EmbedFieldData, MessageEmbed } from 'discord.js';
 
 export default class Part {
   constructor(
@@ -33,47 +34,7 @@ export default class Part {
     return ['combatEngine', 'tacticsEyepiece', 'microReactor', 'exoskeleton'].includes(this.type);
   }
 
-  rate(): string {
-    const [longestStatName] = this.stats.map((stat) => stat.name).sort((a, b) => b.length - a.length);
-    const separator = (banner = '') => banner
-      .padStart(((longestStatName.length + 9) / 2) + (banner.length / 2), '-')
-      .padEnd(longestStatName.length + 9, '-')
-      ;
-
-    const statList = this.stats
-      .sort((a, b) => b.percent - a.percent)
-      .map((stat) => `${stat.name.padEnd(longestStatName.length, ' ')} : ${(stat.percent * 100).toFixed(2).padStart(5, ' ')}%`)
-      .join('\n')
-      ;
-
-    const result = [
-      this.name,
-      separator(),
-      statList,
-    ];
-    const toAdd = [];
-
-    // Crit
-    const critStat = this.stats.find((stat) => stat.type === 'crit');
-    if (!this.isVeraPart() && critStat) {
-      toAdd.push(`${critStat.name.padEnd(longestStatName.length, ' ')} : ${(critStat.percent * 100).toFixed(2).padStart(5, ' ')}%`);
-    }
-
-    // Rate DPS
-    const hasFlatElementalStats = this.stats.some((stat) => stat.isElemental() && stat.isAttack() && stat.isFlat() && stat.percent > 0);
-    if (!this.isVeraPart() && hasFlatElementalStats) {
-      toAdd.push(...this.#rateDPS.call(this, { lineLength: longestStatName.length }));
-    }
-
-    if (toAdd.length) {
-      toAdd.unshift(separator(i18n[this.locale].usableFor));
-      result.push(...toAdd);
-    }
-
-    return `${result.join('\n')}\n`;
-  }
-
-  #rateDPS(options: { lineLength: number }): string[] {
+  #rateDPS(): EmbedFieldData[] {
     const atkStat = this.stats.find((stat) => stat.type === 'atk');
     const getElementalRate = (elementalStat: Stat) => {
       const min = elementalStat.statInfos.initial + (atkStat?.statInfos.initial ?? 52);
@@ -85,10 +46,50 @@ export default class Part {
     const elementalStatList = this.stats
       .filter((stat) => stat.isElemental() && stat.isAttack() && stat.isFlat() && stat.percent > 0)
       .sort((a, b) => getElementalRate(b) - getElementalRate(a))
-      .map((stat) => `${stat.dpsName.padEnd(options.lineLength, ' ')} : ${(getElementalRate(stat) * 100).toFixed(2).padStart(5, ' ')}%`)
-      .join('\n')
+      .map((stat) => ({
+        name: stat.dpsName,
+        value: `\`${(getElementalRate(stat) * 100).toFixed(2)}%\``,
+        inline: true,
+      }))
     ;
 
-    return [elementalStatList];
+    return elementalStatList;
+  }
+
+  asMessageEmbed(jobData: IRateJob): MessageEmbed {
+    const fields = this.stats
+      .sort((a, b) => b.percent - a.percent)
+      .map((stat) => ({
+        name: stat.name,
+        value: `\`${(stat.percent * 100).toFixed(2)}%\``,
+        inline: true,
+      }))
+    ;
+
+    const usageFields = [];
+    // Crit
+    const critStat = this.stats.find((stat) => stat.type.toLowerCase().includes('crit'));
+    if (!this.isVeraPart() && critStat) {
+      usageFields.push({
+        name: critStat.name,
+        value: `\`${(critStat.percent * 100).toFixed(2)}%\``,
+        inline: true,
+      });
+    }
+    // Rate DPS
+    const hasFlatElementalStats = this.stats.some((stat) => stat.isElemental() && stat.isAttack() && stat.isFlat() && stat.percent > 0);
+    if (!this.isVeraPart() && hasFlatElementalStats) {
+      usageFields.push(...this.#rateDPS());
+    }
+
+    return new MessageEmbed()
+      .setTitle(this.name)
+      .setColor('#E58631')
+      .addFields(fields)
+      .addField(`__${i18n[this.locale].usableFor}__`, ' ')
+      .addFields(usageFields)
+      .setImage(jobData.fileUrl)
+      .setTimestamp(jobData.createdAt)
+    ;
   }
 }

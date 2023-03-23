@@ -1,4 +1,4 @@
-// Invit BOT : https://discord.com/api/oauth2/authorize?client_id=1068967987903746098&permissions=274878024768&scope=bot
+// Invit BOT : https://discord.com/api/oauth2/authorize?client_id=1068967987903746098&permissions=274878037056&scope=bot
 import 'module-alias/register';
 import path from 'path';
 import dotenv from 'dotenv';
