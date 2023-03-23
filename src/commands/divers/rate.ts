@@ -46,6 +46,8 @@ export default class RateCommand extends Command {
         authorId: msg.author.id,
         channelId: msg.channel.id,
         messageId: msg.id,
+        retryCount: 1,
+        updatedAt: new Date(),
         createdAt: new Date(),
       };
       const job = await this.client.rateQueue.createRateJob(jobData, msg, true);
