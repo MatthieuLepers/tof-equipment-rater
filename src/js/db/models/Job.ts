@@ -21,15 +21,31 @@ class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttributes<
 
   declare messageId: string;
 
+  declare retryCount: number;
+
   declare createdAt: Date;
 
-  async asQueueJob(client: BotClient): Promise<boolean> {
+  declare updatedAt: Date;
+
+  static async findByJobData(jobData: IRateJob): Promise<JobModel | null> {
+    return JobModel.findOne({
+      where: {
+        channelId: jobData.channelId,
+        messageId: jobData.messageId,
+        authorId: jobData.authorId,
+      },
+    });
+  }
+
+  async enqueueJob(client: BotClient): Promise<boolean> {
     const jobData: IRateJob = {
       fileUrl: this.fileUrl,
       authorId: this.authorId,
       channelId: this.channelId,
       messageId: this.messageId,
+      retryCount: this.retryCount,
       createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
 
     const channel = await client.channels.fetch(this.channelId);
@@ -54,7 +70,9 @@ class JobModel extends Model<InferAttributes<JobModel>, InferCreationAttributes<
       authorId: job.data.authorId,
       channelId: job.data.channelId,
       messageId: job.data.messageId,
+      retryCount: 1,
       createdAt: job.data.createdAt,
+      updatedAt: job.data.updatedAt,
     });
   }
 }
@@ -77,11 +95,16 @@ JobModel.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
+  retryCount: {
+    type: DataTypes.TINYINT,
+    defaultValue: 1,
+  },
   messageId: {
     type: DataTypes.STRING,
     allowNull: false,
   },
   createdAt: DataTypes.DATE,
+  updatedAt: DataTypes.DATE,
 }, {
   sequelize: SequelizeInstance,
   modelName: 'jobs',

@@ -3,5 +3,7 @@ export interface IRateJob {
   authorId: string;
   channelId: string;
   messageId: string;
+  retryCount: number;
   createdAt: Date;
+  updatedAt: Date;
 }

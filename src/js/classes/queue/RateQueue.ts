@@ -33,10 +33,11 @@ export default class RateQueue extends BeeQueue {
   async loadJobsFromDatabase() {
     const dbJobs = await JobModel.findAll({
       order: [
+        ['updatedAt', 'DESC'],
         ['createdAt', 'DESC'],
       ],
     });
-    const results = await Promise.all(dbJobs.map((dbJob) => dbJob.asQueueJob(this.bot)));
+    const results = await Promise.all(dbJobs.map((dbJob) => dbJob.enqueueJob(this.bot)));
     const addedJobs = results.reduce((acc, val) => acc + Number(val), 0);
     this.bot.logger.log('info', `${addedJobs} job${addedJobs > 1 ? 's' : ''} added to queue from database`);
   }
@@ -54,12 +55,13 @@ export default class RateQueue extends BeeQueue {
         const locale = await UserSettingsModel.getLocale(msg.author.id);
         const part = Part.fromOCR(ocrText, this.bot.logger, locale);
         await UserSettingsModel.setLocale(msg.author.id, part.locale);
-        msg.reply(`\`\`\`${part.rate()}\`\`\``);
+        await msg.reply(`\`\`\`${part.rate()}\`\`\``);
         await this.deleteJob(job.data);
         await msg.react('✅');
       } catch (e) {
         this.bot.logger.log('error', e);
-        msg.reply((e as Error).message);
+        await msg.reply((e as Error).message);
+        await this.updateJob(job.data);
         await msg.react('❌');
       }
     });
@@ -68,7 +70,8 @@ export default class RateQueue extends BeeQueue {
     job.on('failed', async (err) => {
       this.bot.logger.log('error', err);
 
-      msg.reply(err.message);
+      await msg.reply(err.message);
+      await this.updateJob(job.data);
       await msg.react('❌');
     });
 
@@ -87,5 +90,20 @@ export default class RateQueue extends BeeQueue {
         messageId: jobData.messageId,
       },
     });
+  }
+
+  private async updateJob(jobData: IRateJob) {
+    const job = await JobModel.findByJobData(jobData);
+    if (job) {
+      job.retryCount -= 1;
+
+      if (job.retryCount < 0) {
+        await job.destroy();
+      } else {
+        job.updatedAt = new Date();
+        await job.save();
+        await job.enqueueJob(this.bot);
+      }
+    }
   }
 }
