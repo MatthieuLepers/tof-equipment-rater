@@ -82,11 +82,18 @@ export default class Part {
       usageFields.push(...this.#rateDPS());
     }
 
+    if (usageFields.length) {
+      usageFields.unshift({
+        name: `__${i18n[this.locale].usableFor}__`,
+        value: ' ',
+        inline: false,
+      });
+    }
+
     return new MessageEmbed()
       .setTitle(this.name)
       .setColor('#E58631')
       .addFields(fields)
-      .addField(`__${i18n[this.locale].usableFor}__`, ' ')
       .addFields(usageFields)
       .setImage(jobData.fileUrl)
       .setTimestamp(jobData.createdAt)
