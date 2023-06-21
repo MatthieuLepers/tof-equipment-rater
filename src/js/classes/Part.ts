@@ -3,7 +3,7 @@ import Logic from '@/js/Logic';
 import PartsData from '@/js/data/parts';
 import i18n from '@/i18n';
 import type { PartTypeEnum, StatTypeEnum } from '@/js/types/enums';
-import type { ILogger, IPartData, IRateJob } from '@/js/types';
+import type { ILogger, IPartData } from '@/js/types';
 import { EmbedFieldData, MessageEmbed } from 'discord.js';
 
 export default class Part {
@@ -56,7 +56,7 @@ export default class Part {
     return elementalStatList;
   }
 
-  asMessageEmbed(jobData: IRateJob): MessageEmbed {
+  asMessageEmbed(fileUrl: string): MessageEmbed {
     const fields = this.stats
       .sort((a, b) => b.percent - a.percent)
       .map((stat) => ({
@@ -95,8 +95,8 @@ export default class Part {
       .setColor('#E58631')
       .addFields(fields)
       .addFields(usageFields)
-      .setImage(jobData.fileUrl)
-      .setTimestamp(jobData.createdAt)
+      .setImage(fileUrl)
+      .setTimestamp(Date.now())
     ;
   }
 }

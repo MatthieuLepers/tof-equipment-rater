@@ -1,9 +1,11 @@
 import { Command, CommandoMessage } from 'discord.js-commando';
-import type { Message, TextChannel } from 'discord.js';
+import type { Message } from 'discord.js';
 
 import { serial } from '@/js/utils/PromiseUtils';
-import type { IRateJob } from '@/js/types';
 import type BotClient from '@/js/classes/Client';
+import * as OcrSolutions from '@/ocr';
+import { UserSettingsModel } from '@/js/db/models';
+import Part from '@/js/classes/Part';
 
 export default class RateCommand extends Command {
   declare client: BotClient;
@@ -23,7 +25,7 @@ export default class RateCommand extends Command {
     });
   }
 
-  async run(msg: CommandoMessage): Promise<Message | Message[]> {
+  async run(msg: CommandoMessage): Promise<Message | Message[] | null> {
     const files = [...msg.attachments.values()];
 
     if (!files.length) {
@@ -40,22 +42,29 @@ export default class RateCommand extends Command {
 
     if (!filteredFiles.length) return msg.reply('I do not support this type of file, try with a *.png or *.jpg');
 
-    const jobs = await serial(filteredFiles.map((file) => async () => {
-      const jobData: IRateJob = {
-        fileUrl: file.url,
-        authorId: msg.author.id,
-        channelId: msg.channel.id,
-        messageId: msg.id,
-        retryCount: 1,
-        updatedAt: new Date(),
-        createdAt: new Date(),
-      };
-      const job = await this.client.rateQueue.createRateJob(jobData, msg.channel as TextChannel, true);
-      return job;
+    await serial(filteredFiles.map((file) => async () => {
+      try {
+        const ocrText = await OcrSolutions.tesseract.getTextFromImage(file.url);
+
+        if (ocrText) {
+          const locale = await UserSettingsModel.getLocale(msg.author.id);
+          const part = Part.fromOCR(ocrText, this.client.logger, locale);
+
+          await msg.delete();
+
+          await UserSettingsModel.setLocale(msg.author.id, part.locale);
+          await msg.channel.send({
+            content: `<@${msg.author.id}>`,
+            embed: part.asMessageEmbed(file.url),
+          });
+        }
+      } catch (e) {
+        this.client.logger.log('error', e);
+        await msg.channel.send((e as Error).message);
+      }
     }));
 
-    // Warn user about new queue system
-    return msg.reply(`Hi! I have received your rate request and have placed ${jobs.length} task${jobs.length > 1 ? 's' : ''} in the queue, I will mention you when I have the results.`);
+    return null;
   }
 
   usage(): string {
